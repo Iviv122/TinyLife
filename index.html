@@ -1,13 +1,13 @@
 <html>
-  <body style="background-color: black; overflow-y: hidden; overflow-x: hidden">
-    <p id="field"></p>
+  <body style="background-color: black; overflow-y: hidden; overflow-x: hidden; ">
+    <p id="field" style=" user-select: none;"></p>
     <script>
       const width = window.innerWidth;
       const height = window.innerHeight;
 
       const mf = (n) => Math.floor(n);
 
-      const gridWidth = mf(width / (10 * 0.6));
+      const gridWidth = mf(width / 6);
       const gridHeight = mf(height / 10);
       const field = document.querySelector("#field");
       const fieldC = " @";
@@ -23,14 +23,29 @@
       field.innerHTML = "click somewhere =)";
 
       function place(x,y){
-        matrix[gridWidth*y+x]
-      }
-      document.addEventListener("mousedown",
+        matrix[gridWidth*y+x] = 1;
+        if(paused){
+            updateS();
+        }
+    }
+    function displace(x,y){
+        matrix[gridWidth*y+x] = 0;
+        if(paused){
+            updateS();
+        }
+    }
 
-      )
-
-      function updateEverything() {
-        var fieldS = "\n";
+      let paused = false;
+      
+      document.addEventListener("contextmenu",(e)=>{e.preventDefault()})
+      document.addEventListener("mousedown", (e)=>{
+        const x =mf((e.clientX)/6);
+        const y = mf(e.clientY/10);
+       (e.button == 0) ? place(x,y) : displace(x,y); 
+    })
+      document.addEventListener("keypress",(e)=>{paused=!paused; (paused) ?  0: updateEverything();})
+      const updateS=()=>{
+      var fieldS = "\n";
         matrix.forEach((n, i) => {
           fieldS += fieldC[matrix[i]];
           if ((i + 1) % gridWidth === 0) {
@@ -38,7 +53,9 @@
           }
         });
         field.innerHTML = `<pre>${fieldS}</pre>`;
-
+    }
+      function updateEverything() {
+        updateS();
         const nSum = (x, y) => {
           let sum = 0;
           for (let i = -1; i <= 1; i++) {
@@ -67,7 +84,7 @@
         }
 
         matrix = newMatrix;
-        setTimeout(updateEverything, 100);
+        if(paused){;}else{setTimeout(updateEverything, 10);}
       }
       updateEverything();
     </script>

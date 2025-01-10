@@ -1,0 +1,15 @@
+<html>
+<body style="background-color:black;overflow-y:hidden;overflow-x:hidden">
+<p id="field" style="user-select:none"></p>
+<script>/*<![CDATA[*/const width=window.innerWidth;const height=window.innerHeight;const mf=(n)=>Math.floor(n);const gridWidth=mf(width/6);const gridHeight=mf(height/10);const field=document.querySelector("#field");const fieldC=" @";const fs=field.style;fs.color="white";fs.fontSize=`10px`;fs.lineHeight="1";var matrix=Array.from({length:gridHeight*gridWidth},(_,i)=>Math.random()>0.9?1:0);field.innerHTML="click somewhere =)";function place(x,y){matrix[gridWidth*y+x]=1;if(paused){updateS();}}
+function displace(x,y){matrix[gridWidth*y+x]=0;if(paused){updateS();}}
+let paused=false;document.addEventListener("contextmenu",(e)=>{e.preventDefault()})
+document.addEventListener("mousedown",(e)=>{const x=mf((e.clientX)/6);const y=mf(e.clientY/10);(e.button==0)?place(x,y):displace(x,y);})
+document.addEventListener("keypress",(e)=>{paused=!paused;(paused)?0:updateEverything();})
+const updateS=()=>{var fieldS="\n";matrix.forEach((n,i)=>{fieldS+=fieldC[matrix[i]];if((i+1)%gridWidth===0){fieldS+="\n";}});field.innerHTML=`<pre>${fieldS}</pre>`;}
+function updateEverything(){updateS();const nSum=(x,y)=>{let sum=0;for(let i=-1;i<=1;i++){for(let j=-1;j<=1;j++){if(i===0&&j===0)continue;const nx=x+i;const ny=y+j;if(nx>=0&&nx<gridWidth&&ny>=0&&ny<gridHeight){sum+=matrix[gridWidth*ny+nx];}}}
+return sum;};const newMatrix=matrix.slice();for(let y=0;y<gridHeight;y++){for(let x=0;x<gridWidth;x++){let cell=nSum(x,y);const idx=gridWidth*y+x;if(matrix[idx]===1){newMatrix[idx]=cell===2||cell===3?1:0;}else{newMatrix[idx]=cell===3?1:0;}}}
+matrix=newMatrix;if(paused){;}else{setTimeout(updateEverything,10);}}
+updateEverything();/*]]>*/</script>
+</body>
+</html>
